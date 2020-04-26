@@ -4,20 +4,24 @@ conn = psycopg2.connect('dbname=todoapp_development user=darius')
 
 cur = conn.cursor()
 
-cur.execute("DROP TABLE IF EXISTS todos;")
+cur.execute('DROP TABLE IF EXISTS todos;')
 
-cur.execute("""
+cur.execute('''
     CREATE TABLE todos (
-        id serial PRIMARY KEY,
-        description VARCHAR NOT NULL
+        id INTEGER PRIMARY KEY,
+        completed BOOLEAN NOT NULL DEFAULT False
     );
-""")
+''')
 
-cur.execute("""
-    INSERT INTO todos
-    VALUES (1, 'test entry');
-""")
+cur.execute('INSERT INTO todos VALUES (%s, %s);', (1, True))
 
+SQL = 'INSERT INTO todos VALUES (%(id)s, %(completed)s);'
+
+data = {
+    'id': 2,
+    'completed': False}
+
+cur.execute(SQL, data)
 
 conn.commit()
 
