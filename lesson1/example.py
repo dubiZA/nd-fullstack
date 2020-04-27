@@ -13,6 +13,8 @@ cur.execute('''
     );
 ''')
 
+cur.execute('INSERT INTO todos VALUES (3, False);')
+
 cur.execute('INSERT INTO todos VALUES (%s, %s);', (1, True))
 
 SQL = 'INSERT INTO todos VALUES (%(id)s, %(completed)s);'
@@ -22,6 +24,17 @@ data = {
     'completed': False}
 
 cur.execute(SQL, data)
+
+cur.execute('SELECT * FROM todos;')
+
+result1 = cur.fetchmany(2)
+print(f'result1: {result1}')
+
+result2 = cur.fetchone()
+print(f'result2: {result2}')
+
+result3 = cur.fetchall()
+print(f'result3: {result3}')
 
 conn.commit()
 
