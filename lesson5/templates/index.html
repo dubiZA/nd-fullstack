@@ -12,7 +12,7 @@
 </head>
 <body>
     <form id="form">
-        <div class="hidden"></div>
+        <div class="hidden">Something went wrong!</div>
         <input id="description" type="text" name="description" />
         <input type="submit" value="Create" name="create" />
     </form>
@@ -30,8 +30,7 @@
                     'description': document.getElementById('description').value
                 }),
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-Test': 'True'
+                    'Content-Type': 'application/json'
                 }
             })
             .then(response => response.json())
