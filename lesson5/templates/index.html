@@ -8,11 +8,15 @@
         .hidden {
             display:none;
         }
+        .showError{
+            display:block;
+            color: red;
+        }
     </style>
 </head>
 <body>
     <form id="form">
-        <div class="hidden">Something went wrong!</div>
+        <div id="error" class="hidden">Something went wrong!</div>
         <input id="description" type="text" name="description" />
         <input type="submit" value="Create" name="create" />
     </form>
@@ -39,10 +43,11 @@
                 const liItem = document.createElement('LI');
                 liItem.innerHTML = jsonResponse['description'];
                 document.getElementById('todos').appendChild(liItem);
-                document.getElementById('hidden').className = 'hidden';
+                document.getElementById('error').className = 'hidden';
             })
             .catch(function() {
-                document.getElementById('hidden').className = '';
+                console.log('Something went wrong');
+                document.getElementById('error').className = 'showError';
             })
         }
     </script>
