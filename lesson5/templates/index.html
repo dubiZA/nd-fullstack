@@ -56,15 +56,22 @@
             deleteButton.onclick = function(e) {
                 console.log('event', e)
                 const todoId = e.target.dataset['id']
-                fetch('/todos/delete?id=' + todoId)
-                .then(function(jsonResponse) {
-                    console.log('delete_event', jsonResponse)
-                    document.getElementById(todoId).remove();
-                    document.getElementById('error').className = 'hidden';
+                fetch('/todos/' + todoId, {
+                    method: 'DELETE'
                 })
-                .catch(function() {
-                    document.getElementById('error').className = 'showError';
-                })
+                .then(response => response.json())
+            .then(function(jsonResponse) {
+                console.log(jsonResponse);
+            })
+                // fetch('/todos/delete?id=' + todoId)
+                // .then(function(jsonResponse) {
+                //     console.log('delete_event', jsonResponse)
+                //     document.getElementById(todoId).remove();
+                //     document.getElementById('error').className = 'hidden';
+                // })
+                // .catch(function() {
+                //     document.getElementById('error').className = 'showError';
+                // })
             }
         }
         const checkboxes = document.querySelectorAll('.check-completed');
