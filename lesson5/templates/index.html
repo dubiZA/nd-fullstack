@@ -60,18 +60,15 @@
                     method: 'DELETE'
                 })
                 .then(response => response.json())
-            .then(function(jsonResponse) {
-                console.log(jsonResponse);
-            })
-                // fetch('/todos/delete?id=' + todoId)
-                // .then(function(jsonResponse) {
-                //     console.log('delete_event', jsonResponse)
-                //     document.getElementById(todoId).remove();
-                //     document.getElementById('error').className = 'hidden';
-                // })
-                // .catch(function() {
-                //     document.getElementById('error').className = 'showError';
-                // })
+                .then(function(jsonResponse) {
+                    console.log(jsonResponse);
+                    liId = jsonResponse['id'];
+                    document.getElementById(liId).remove();
+                    document.getElementById('error').className = 'hidden';
+                })
+                .catch(function() {
+                    document.getElementById('error').className = 'showError';
+                })
             }
         }
         const checkboxes = document.querySelectorAll('.check-completed');
@@ -116,6 +113,7 @@
                 liItem.innerHTML = jsonResponse['description'];
                 document.getElementById('todos').appendChild(liItem);
                 document.getElementById('error').className = 'hidden';
+                location.reload()
             })
             .catch(function() {
                 console.log('Something went wrong');

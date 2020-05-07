@@ -65,16 +65,24 @@ def set_completed(todo_id):
 
 @app.route('/todos/<todo_id>', methods=['DELETE'])
 def delete_todo(todo_id):
+    error = False
+    body = {}
     try:
         todo = Todos.query.get(todo_id)
         db.session.delete(todo)
         db.session.commit()
+        body['success'] = True
+        body['id'] = todo_id
     except:
+        error = True
         db.session.rollback()
+        print(sys.exc_info())
     finally:
         db.session.close()
-
-    return jsonify({'success': True})
+    if error:
+        abort(400)
+    else:
+        return jsonify(body)
     
 
 if __name__ == '__main__':
