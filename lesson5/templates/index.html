@@ -14,6 +14,23 @@
         }
         ul {
             list-style: none;
+            padding: 0;
+            margin: 0;
+            width: 400px;
+            min-width: 400px;
+            max-width: 450px;
+        }
+        li {
+            clear: both;
+        }
+        li button {
+            -webkit-appearance: none;
+            border: none;
+            outline: none;
+            color: red;
+            float: right;
+            cursor: pointer;
+            font-size: 20px;
         }
     </style>
 </head>
@@ -25,10 +42,31 @@
     </form>
     <ul id="todos">
         {% for d in data %}
-        <li><input class="check-completed" data-id="{{ d.id }}" type="checkbox" {% if d.completed %} checked {% endif %}/> {{ d.description }}</li>
+        <li id="{{ d.id }}">
+            <input class="check-completed" data-id="{{ d.id }}" type="checkbox" {% if d.completed %} checked {% endif %}/>
+            {{ d.description }}
+            <button class="delete-todo" data-id="{{ d.id }}">&cross;</button>
+        </li>
         {% endfor %}
     </ul>
     <script>
+        const deleteButtons = document.querySelectorAll('.delete-todo');
+        for (let i = 0; i < deleteButtons.length; i++) {
+            deleteButton = deleteButtons[i]
+            deleteButton.onclick = function(e) {
+                console.log('event', e)
+                const todoId = e.target.dataset['id']
+                fetch('/todos/delete?id=' + todoId)
+                .then(function(jsonResponse) {
+                    console.log('delete_event', jsonResponse)
+                    document.getElementById(todoId).remove();
+                    document.getElementById('error').className = 'hidden';
+                })
+                .catch(function() {
+                    document.getElementById('error').className = 'showError';
+                })
+            }
+        }
         const checkboxes = document.querySelectorAll('.check-completed');
         for (let i = 0; i < checkboxes.length; i++) {
             const checkbox = checkboxes[i];
