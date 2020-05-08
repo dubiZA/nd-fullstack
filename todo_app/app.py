@@ -52,12 +52,14 @@ def create_todo():
     error = False
     body = {}
     try:
-        description = request.get_json()['description']
-        todo = Todos(description=description)
+        description = request.form.get('description')
+        list_id = request.form.get('list-id')
+        todo = Todos(
+            description=description,
+            list_id=list_id)
         db.session.add(todo)
         db.session.commit()
-        body['description'] = todo.description
-        body['id'] = todo.id
+        list_id = todo.list_id
     except:
         error = True
         db.session.rollback()
@@ -67,7 +69,7 @@ def create_todo():
     if error:
         abort(400)
     else:
-        return jsonify(body)
+        return redirect(url_for('get_list_todos', list_id=list_id))
 
 
 @app.route('/todos/<todo_id>/completed', methods=['POST'])
@@ -105,7 +107,33 @@ def delete_todo(todo_id):
         abort(400)
     else:
         return jsonify(body)
-    
+
+
+@app.route('/list/create', methods=['POST'])
+def create_list():
+    error = False
+    body = {}
+    try:
+        name = request.form.get('list-name')
+        # name = request.get_json()['name']
+        todo_list = TodoLists(name=name)
+        db.session.add(todo_list)
+        db.session.commit()
+        list_id = todo_list.id
+        # body['name'] = todo_list.name
+        # body['id'] = todo_list.id
+    except:
+        error = True
+        db.session.rollback()
+        print(sys.exc_info())
+    finally:
+        db.session.close()
+    if error:
+        abort(400)
+    else:
+        return redirect(url_for('get_list_todos', list_id=list_id))
+        # return redirect(url_for('index'))
+
 
 if __name__ == '__main__':
     app.run(debug=True)
