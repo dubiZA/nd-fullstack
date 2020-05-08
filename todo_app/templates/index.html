@@ -37,10 +37,20 @@
             display: inline-block;
             vertical-align: top;
         }
+        
+        .todos-wrapper {
+            border: 2px solid black;
+            padding: 1em;
+        }
     </style>
 </head>
 <body>
     <div class="lists-wrapper">
+        <form id="list-form">
+            <div id="list-error" class="hidden">Something went wrong!</div>
+            <input id="list-name" type="text" name="list-name" />
+            <input type="submit" value="Add List" name="add-list" />
+        </form>
         <ul>
             {% for list in lists %}
             <li>
@@ -51,10 +61,10 @@
     </div>
     <div class="todos-wrapper">
         <h1>{{ active_list.name }}</h1>
-        <form id="form">
+        <form id="todo-form">
             <div id="error" class="hidden">Something went wrong!</div>
             <input id="description" type="text" name="description" />
-            <input type="submit" value="Create" name="create" />
+            <input type="submit" value="Add Todo" name="add-todo" />
         </form>
         <ul id="todos">
             {% for todo in todos %}
@@ -112,7 +122,7 @@
                 })
             }
         }
-        document.getElementById('form').onsubmit = function(e) {
+        document.getElementById('todo-form').onsubmit = function(e) {
             e.preventDefault();
             fetch('/todos/create', {
                 method: 'POST',
