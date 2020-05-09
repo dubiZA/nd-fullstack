@@ -16,6 +16,7 @@ class TodoLists(db.Model):
     __tablename__ = 'todo_lists'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(), nullable=False)
+    completed = db.Column(db.Boolean, nullable=False, default=False)
     todos = db.relationship('Todos', backref='list', lazy=True)
 
     def __repr__(self):
@@ -45,6 +46,47 @@ def get_list_todos(list_id):
         active_list=TodoLists.query.get(list_id),
         todos=Todos.query.filter_by(list_id=list_id).order_by('id').all()
         )
+
+
+@app.route('/list/create', methods=['POST'])
+def create_list():
+    error = False
+    body = {}
+    try:
+        name = request.form.get('list-name')
+        todo_list = TodoLists(name=name)
+        db.session.add(todo_list)
+        db.session.commit()
+        list_id = todo_list.id
+    except:
+        error = True
+        db.session.rollback()
+        print(sys.exc_info())
+    finally:
+        db.session.close()
+    if error:
+        abort(400)
+    else:
+        return redirect(url_for('get_list_todos', list_id=list_id))
+
+
+@app.route('/list/<list_id>/completed', methods=['POST'])
+def complete_list(list_id):
+    try:
+        completed = request.get_json()['completed']
+        todo_list = TodoLists.query.get(list_id)
+        if completed == False:
+            Todos.query.filter_by(list_id=list_id).update({Todos.completed: False})
+        elif completed == True:
+            Todos.query.filter_by(list_id=list_id).update({Todos.completed: True})
+        todo_list.completed = completed
+        db.session.commit()
+    except:
+        db.session.rollback()
+    finally:
+        db.session.close()
+
+    return redirect(url_for('get_list_todos', list_id=list_id))
 
 
 @app.route('/todos/create', methods=['POST'])
@@ -107,32 +149,6 @@ def delete_todo(todo_id):
         abort(400)
     else:
         return jsonify(body)
-
-
-@app.route('/list/create', methods=['POST'])
-def create_list():
-    error = False
-    body = {}
-    try:
-        name = request.form.get('list-name')
-        # name = request.get_json()['name']
-        todo_list = TodoLists(name=name)
-        db.session.add(todo_list)
-        db.session.commit()
-        list_id = todo_list.id
-        # body['name'] = todo_list.name
-        # body['id'] = todo_list.id
-    except:
-        error = True
-        db.session.rollback()
-        print(sys.exc_info())
-    finally:
-        db.session.close()
-    if error:
-        abort(400)
-    else:
-        return redirect(url_for('get_list_todos', list_id=list_id))
-        # return redirect(url_for('index'))
 
 
 if __name__ == '__main__':
